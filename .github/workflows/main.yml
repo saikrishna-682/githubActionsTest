@@ -1,4 +1,4 @@
-name: Docker Build and Push
+name: Docker Build, Push, and Run
 
 on:
   push:
@@ -34,3 +34,17 @@ jobs:
         push: true
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/flask-sample:latest
+
+  run:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Pull Docker image
+      run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/flask-sample:latest
+
+    - name: Run Docker container
+      run: docker run -d -p 5000:5000 ${{ secrets.DOCKERHUB_USERNAME }}/flask-sample:latest
